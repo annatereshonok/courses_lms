@@ -1,13 +1,13 @@
 from rest_framework import viewsets, generics
 from django.db.models import Count, Prefetch
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
 from .models import Course, Lesson
 from .serializers import CourseListSerializer, CourseDetailSerializer, LessonSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     queryset = Course.objects.all()
 
     def get_serializer_class(self):
@@ -37,13 +37,13 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
 class LessonCreateAPIView(generics.CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
