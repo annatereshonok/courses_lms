@@ -5,11 +5,15 @@ from .models import Course, Lesson
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = ["id", "name", "description", "preview", "video_url", "course"]
+        fields = ["id", "name", "description", "preview", "video_url",  "course"]
 
 
 class CourseListSerializer(serializers.ModelSerializer):
-    lessons_count = serializers.IntegerField(read_only=True)
+    lessons_count = serializers.SerializerMethodField()
+
+    def get_lessons_count(self, obj):
+        lessons_count = obj.lessons.count()
+        return lessons_count
 
     class Meta:
         model = Course

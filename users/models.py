@@ -1,5 +1,11 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.conf import settings
+from django.db import models
+from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+from lms.models import Lesson, Course
 
 
 class CustomUserManager(BaseUserManager):
@@ -60,3 +66,71 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+
+class Payment(models.Model):
+    PAYMENT_CHOICE = [
+        ('cash', 'Наличные'),
+        ('transfer', 'Перевод на счёт')
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='payments',
+        verbose_name='Пользователь',
+        db_index=True,
+    )
+    paid_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='Дата оплаты',
+        db_index=True,
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.PROTECT,
+        related_name='payments',
+        verbose_name='Курс',
+        null=True, blank=True,
+    )
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.PROTECT,
+        related_name='payments',
+        verbose_name='Урок',
+        null=True, blank=True,
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Сумма оплаты',
+    )
+    method = models.CharField(
+        max_length=16,
+        choices=PAYMENT_CHOICE,
+        verbose_name='Способ оплаты',
+    )
+
+    def clean(self):
+        super().clean()
+        if (self.course is None) == (self.lesson is None):
+            raise ValidationError('Укажите либо курс, либо урок.')
+
+    class Meta:
+        verbose_name = 'Платёж'
+        verbose_name_plural = 'Платежи'
+        constraints = [
+            models.CheckConstraint(
+                name='payment_exactly_one_target',
+                check=(
+                    (Q(course__isnull=False) & Q(lesson__isnull=True)) |
+                    (Q(course__isnull=True) & Q(lesson__isnull=False))
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        target = self.course or self.lesson
+        return f'Платёж {self.user} → {target} на {self.amount}'
+
