@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Course(models.Model):
@@ -9,6 +10,13 @@ class Course(models.Model):
         blank=True, null=True
     )
     description = models.TextField(verbose_name="Описание", blank=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="courses",
+        on_delete=models.CASCADE,
+        verbose_name="Создатель",
+        db_index=True,
+    )
 
     def __str__(self):
         return self.name
