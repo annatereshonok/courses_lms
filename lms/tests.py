@@ -13,17 +13,27 @@ class LessonAndSubscriptionTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         # пользователи
-        cls.owner = User.objects.create_user(email="owner@example.com", password="pw123456")
-        cls.other = User.objects.create_user(email="other@example.com", password="pw123456")
+        cls.owner = User.objects.create_user(
+            email="owner@example.com", password="pw123456"
+        )
+        cls.other = User.objects.create_user(
+            email="other@example.com", password="pw123456"
+        )
 
         # модератор
-        cls.moder = User.objects.create_user(email="moder@example.com", password="pw123456")
+        cls.moder = User.objects.create_user(
+            email="moder@example.com", password="pw123456"
+        )
         group, _ = Group.objects.get_or_create(name="moderators")
         cls.moder.groups.add(group)
 
         # курсы
-        cls.my_course = Course.objects.create(name="Мой курс", description="", owner=cls.owner)
-        cls.other_course = Course.objects.create(name="Чужой курс", description="", owner=cls.other)
+        cls.my_course = Course.objects.create(
+            name="Мой курс", description="", owner=cls.owner
+        )
+        cls.other_course = Course.objects.create(
+            name="Чужой курс", description="", owner=cls.other
+        )
 
         # уроки
         cls.my_lesson = Lesson.objects.create(
@@ -65,7 +75,11 @@ class LessonAndSubscriptionTests(APITestCase):
     # LESSONS
 
     def _items(self, res):
-        return res.data["results"] if isinstance(res.data, dict) and "results" in res.data else res.data
+        return (
+            res.data["results"]
+            if isinstance(res.data, dict) and "results" in res.data
+            else res.data
+        )
 
     def test_lessons_list_owner_sees_only_own(self):
         self.client.force_authenticate(self.owner)
@@ -95,7 +109,9 @@ class LessonAndSubscriptionTests(APITestCase):
         }
         res = self.client.post(self.lesson_create_url(), payload, format="json")
         self.assertIn(res.status_code, (status.HTTP_201_CREATED, status.HTTP_200_OK))
-        self.assertTrue(Lesson.objects.filter(name="Новый урок", course=self.my_course).exists())
+        self.assertTrue(
+            Lesson.objects.filter(name="Новый урок", course=self.my_course).exists()
+        )
 
     def test_owner_cannot_create_lesson_in_foreign_course(self):
         self.client.force_authenticate(self.owner)
@@ -106,7 +122,9 @@ class LessonAndSubscriptionTests(APITestCase):
             "course": self.other_course.id,
         }
         res = self.client.post(self.lesson_create_url(), payload, format="json")
-        self.assertIn(res.status_code, (status.HTTP_403_FORBIDDEN, status.HTTP_400_BAD_REQUEST))
+        self.assertIn(
+            res.status_code, (status.HTTP_403_FORBIDDEN, status.HTTP_400_BAD_REQUEST)
+        )
 
     def test_moderator_cannot_create_or_delete_lesson(self):
         self.client.force_authenticate(self.moder)
@@ -126,8 +144,14 @@ class LessonAndSubscriptionTests(APITestCase):
     def test_owner_can_update_and_delete_own_lesson(self):
         self.client.force_authenticate(self.owner)
 
-        res_upd = self.client.patch(self.lesson_update_url(self.my_lesson.id), {"name": "Переименован"}, format="json")
-        self.assertIn(res_upd.status_code, (status.HTTP_200_OK, status.HTTP_202_ACCEPTED))
+        res_upd = self.client.patch(
+            self.lesson_update_url(self.my_lesson.id),
+            {"name": "Переименован"},
+            format="json",
+        )
+        self.assertIn(
+            res_upd.status_code, (status.HTTP_200_OK, status.HTTP_202_ACCEPTED)
+        )
         self.my_lesson.refresh_from_db()
         self.assertEqual(self.my_lesson.name, "Переименован")
 
@@ -137,7 +161,9 @@ class LessonAndSubscriptionTests(APITestCase):
 
     def test_other_user_cannot_update_or_delete_foreign_lesson(self):
         self.client.force_authenticate(self.other)
-        res_upd = self.client.patch(self.lesson_update_url(self.my_lesson.id), {"name": "Хак"}, format="json")
+        res_upd = self.client.patch(
+            self.lesson_update_url(self.my_lesson.id), {"name": "Хак"}, format="json"
+        )
         self.assertEqual(res_upd.status_code, status.HTTP_403_FORBIDDEN)
         res_del = self.client.delete(self.lesson_delete_url(self.my_lesson.id))
         self.assertEqual(res_del.status_code, status.HTTP_403_FORBIDDEN)
@@ -160,12 +186,23 @@ class LessonAndSubscriptionTests(APITestCase):
         self.client.force_authenticate(self.owner)
 
         res_sub = self.client.post(self.course_subscribe_url(self.other_course.id))
-        self.assertIn(res_sub.status_code, (status.HTTP_200_OK, status.HTTP_201_CREATED))
-        self.assertTrue(Subscription.objects.filter(user=self.owner, course=self.other_course).exists())
+        self.assertIn(
+            res_sub.status_code, (status.HTTP_200_OK, status.HTTP_201_CREATED)
+        )
+        self.assertTrue(
+            Subscription.objects.filter(
+                user=self.owner, course=self.other_course
+            ).exists()
+        )
 
         res_sub2 = self.client.post(self.course_subscribe_url(self.other_course.id))
         self.assertEqual(res_sub2.status_code, status.HTTP_200_OK)
-        self.assertEqual(Subscription.objects.filter(user=self.owner, course=self.other_course).count(), 1)
+        self.assertEqual(
+            Subscription.objects.filter(
+                user=self.owner, course=self.other_course
+            ).count(),
+            1,
+        )
 
         res_list = self.client.get(self.course_my_subs_url())
         self.assertEqual(res_list.status_code, status.HTTP_200_OK)
@@ -175,12 +212,17 @@ class LessonAndSubscriptionTests(APITestCase):
             if isinstance(c, dict):
                 return c.get("id") or c.get("pk")
             return c
+
         returned_ids = {extract_course_id(row) for row in res_list.data}
         self.assertIn(self.other_course.id, returned_ids)
 
         res_unsub = self.client.delete(self.course_subscribe_url(self.other_course.id))
         self.assertEqual(res_unsub.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Subscription.objects.filter(user=self.owner, course=self.other_course).exists())
+        self.assertFalse(
+            Subscription.objects.filter(
+                user=self.owner, course=self.other_course
+            ).exists()
+        )
 
     def test_unauthenticated_cannot_use_subscription_endpoints(self):
         self.client.force_authenticate(user=None)

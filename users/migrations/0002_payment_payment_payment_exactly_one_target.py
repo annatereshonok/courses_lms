@@ -9,29 +9,91 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lms', '0001_initial'),
-        ('users', '0001_initial'),
+        ("lms", "0001_initial"),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Payment',
+            name="Payment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('paid_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now, verbose_name='Дата оплаты')),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Сумма оплаты')),
-                ('method', models.CharField(choices=[('cash', 'Наличные'), ('transfer', 'Перевод на счёт')], max_length=16, verbose_name='Способ оплаты')),
-                ('course', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='payments', to='lms.course', verbose_name='Курс')),
-                ('lesson', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='payments', to='lms.lesson', verbose_name='Урок')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='payments', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "paid_at",
+                    models.DateTimeField(
+                        db_index=True,
+                        default=django.utils.timezone.now,
+                        verbose_name="Дата оплаты",
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2, max_digits=10, verbose_name="Сумма оплаты"
+                    ),
+                ),
+                (
+                    "method",
+                    models.CharField(
+                        choices=[("cash", "Наличные"), ("transfer", "Перевод на счёт")],
+                        max_length=16,
+                        verbose_name="Способ оплаты",
+                    ),
+                ),
+                (
+                    "course",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="payments",
+                        to="lms.course",
+                        verbose_name="Курс",
+                    ),
+                ),
+                (
+                    "lesson",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="payments",
+                        to="lms.lesson",
+                        verbose_name="Урок",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="payments",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Пользователь",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Платёж',
-                'verbose_name_plural': 'Платежи',
+                "verbose_name": "Платёж",
+                "verbose_name_plural": "Платежи",
             },
         ),
         migrations.AddConstraint(
-            model_name='payment',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('course__isnull', False), ('lesson__isnull', True)), models.Q(('course__isnull', True), ('lesson__isnull', False)), _connector='OR'), name='payment_exactly_one_target'),
+            model_name="payment",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    models.Q(("course__isnull", False), ("lesson__isnull", True)),
+                    models.Q(("course__isnull", True), ("lesson__isnull", False)),
+                    _connector="OR",
+                ),
+                name="payment_exactly_one_target",
+            ),
         ),
     ]

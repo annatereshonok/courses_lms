@@ -21,26 +21,30 @@ class Command(BaseCommand):
             owner.is_staff = True
             owner.is_superuser = True
             owner.save()
-            self.stdout.write(self.style.SUCCESS("👤 Пользователь admin@mail.ru создан"))
+            self.stdout.write(
+                self.style.SUCCESS("👤 Пользователь admin@mail.ru создан")
+            )
         else:
-            self.stdout.write(self.style.SUCCESS("👤 Пользователь admin@mail.ru уже существует"))
+            self.stdout.write(
+                self.style.SUCCESS("👤 Пользователь admin@mail.ru уже существует")
+            )
 
         # --- Курсы ---
         course_data = [
             {
                 "name": "Backend",
                 "description": "Основы серверной разработки: Django, DRF, БД, тесты, деплой.",
-                "preview": "images/backend.png"
+                "preview": "images/backend.png",
             },
             {
                 "name": "Frontend",
                 "description": "Современный фронтенд: HTML/CSS, JS/TS, React, сборка, SPA.",
-                "preview": "images/frontend.png"
+                "preview": "images/frontend.png",
             },
             {
                 "name": "Data Science",
                 "description": "Аналитика и ML: Python, NumPy/Pandas, визуализация, модели.",
-                "preview": "images/ds.png"
+                "preview": "images/ds.png",
             },
         ]
 
@@ -71,7 +75,6 @@ class Command(BaseCommand):
                 "video_url": "https://www.youtube.com/watch?v=9bZkp7q19f0",
                 "course": courses["Backend"],
             },
-
             # Frontend
             {
                 "name": "HTML/CSS базово",
@@ -91,7 +94,6 @@ class Command(BaseCommand):
                 "video_url": "https://www.youtube.com/watch?v=Ke90Tje7VS0",
                 "course": courses["Frontend"],
             },
-
             # Data Science
             {
                 "name": "Python для анализа данных",
@@ -115,6 +117,10 @@ class Command(BaseCommand):
 
         for data in lessons_data:
             lesson = Lesson.objects.create(**data)
-            self.stdout.write(self.style.SUCCESS(f"✅ Урок создан: {lesson.name} → {lesson.course.name}"))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"✅ Урок создан: {lesson.name} → {lesson.course.name}"
+                )
+            )
 
         self.stdout.write(self.style.SUCCESS("🎉 База успешно заполнена!"))

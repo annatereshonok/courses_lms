@@ -11,6 +11,8 @@ class VideoURLValidator:
         netloc = urlparse(url).netloc.lower()
         if not netloc:
             return attrs
-        if 'youtube.com' not in netloc:
-            raise serializers.ValidationError({self.field: "Ссылка должна быть с YouTube."})
+        if "youtube.com" not in netloc:
+            raise serializers.ValidationError(
+                {self.field: "Ссылка должна быть с YouTube."}
+            )
         return attrs

@@ -5,9 +5,7 @@ from django.conf import settings
 class Course(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название")
     preview = models.ImageField(
-        upload_to="images/",
-        verbose_name="Превью",
-        blank=True, null=True
+        upload_to="images/", verbose_name="Превью", blank=True, null=True
     )
     description = models.TextField(verbose_name="Описание", blank=True)
     owner = models.ForeignKey(
@@ -16,6 +14,11 @@ class Course(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Создатель",
         db_index=True,
+    )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="Цена",
     )
 
     def __str__(self):
@@ -30,9 +33,7 @@ class Lesson(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название")
     description = models.TextField(verbose_name="Описание", blank=True)
     preview = models.ImageField(
-        upload_to="images/",
-        verbose_name="Превью",
-        blank=True, null=True
+        upload_to="images/", verbose_name="Превью", blank=True, null=True
     )
     video_url = models.URLField(verbose_name="Ссылка на видео")
     course = models.ForeignKey(
@@ -65,7 +66,7 @@ class Subscription(models.Model):
         related_name="subscriptions",
         on_delete=models.CASCADE,
         verbose_name="Пользователь",
-        db_index=True
+        db_index=True,
     )
     course = models.ForeignKey(
         Course,

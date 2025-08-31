@@ -8,7 +8,15 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ["id", "name", "description", "preview", "video_url",  "course", "owner"]
+        fields = [
+            "id",
+            "name",
+            "description",
+            "preview",
+            "video_url",
+            "course",
+            "owner",
+        ]
         read_only_fields = ["id", "owner"]
         validators = [VideoURLValidator(field="video_url")]
 

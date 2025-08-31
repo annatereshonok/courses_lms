@@ -10,7 +10,9 @@ from lms.models import Course, Lesson
 
 
 class Command(BaseCommand):
-    help = "Создаёт тестовые платежи для курсов/уроков (ровно один таргет: курс ИЛИ урок)."
+    help = (
+        "Создаёт тестовые платежи для курсов/уроков (ровно один таргет: курс ИЛИ урок)."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -46,9 +48,13 @@ class Command(BaseCommand):
         if created:
             owner.set_password("admin123")
             owner.save()
-            self.stdout.write(self.style.SUCCESS(f"👤 Создан пользователь {owner.email}"))
+            self.stdout.write(
+                self.style.SUCCESS(f"👤 Создан пользователь {owner.email}")
+            )
         else:
-            self.stdout.write(self.style.SUCCESS(f"👤 Используем пользователя {owner.email}"))
+            self.stdout.write(
+                self.style.SUCCESS(f"👤 Используем пользователя {owner.email}")
+            )
 
         courses = list(Course.objects.all())
         lessons = list(Lesson.objects.all())
@@ -59,7 +65,9 @@ class Command(BaseCommand):
                 description="Временный курс для демо-платежей",
             )
             courses.append(demo_course)
-            self.stdout.write(self.style.WARNING("⚠️ Курсов не было — создан демо-курс."))
+            self.stdout.write(
+                self.style.WARNING("⚠️ Курсов не было — создан демо-курс.")
+            )
 
         if not lessons:
             base_course = courses[0]
@@ -70,16 +78,25 @@ class Command(BaseCommand):
                 course=base_course,
             )
             lessons.append(demo_lesson)
-            self.stdout.write(self.style.WARNING("⚠️ Уроков не было — создан демо-урок."))
+            self.stdout.write(
+                self.style.WARNING("⚠️ Уроков не было — создан демо-урок.")
+            )
 
         # 4) Генерация платежей
-        amounts = [Decimal("990.00"), Decimal("1490.00"), Decimal("1990.00"), Decimal("2490.00")]
+        amounts = [
+            Decimal("990.00"),
+            Decimal("1490.00"),
+            Decimal("1990.00"),
+            Decimal("2490.00"),
+        ]
         methods = [code for code, _ in Payment.PAYMENT_CHOICE]
 
         created_count = 0
         for i in range(options["count"]):
             # Выбираем цель: курс ИЛИ урок (ровно одно)
-            pick_course = random.choice([True, False]) if (courses and lessons) else bool(courses)
+            pick_course = (
+                random.choice([True, False]) if (courses and lessons) else bool(courses)
+            )
             if pick_course:
                 course = random.choice(courses)
                 lesson = None
@@ -104,8 +121,12 @@ class Command(BaseCommand):
                 method=random.choice(methods),
             )
             created_count += 1
-            self.stdout.write(self.style.SUCCESS(
-                f"💳 Платёж #{p.id}: {target_label} — {p.amount} ({p.get_method_display()})"
-            ))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"💳 Платёж #{p.id}: {target_label} — {p.amount} ({p.get_method_display()})"
+                )
+            )
 
-        self.stdout.write(self.style.SUCCESS(f"🎉 Готово! Создано платежей: {created_count}"))
+        self.stdout.write(
+            self.style.SUCCESS(f"🎉 Готово! Создано платежей: {created_count}")
+        )

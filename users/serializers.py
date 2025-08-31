@@ -21,7 +21,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "email", "avatar", "phone", "password", "password2")
-        read_only_fields = ("id", )
+        read_only_fields = ("id",)
 
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -43,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "email", "avatar", "phone", "password")
-        read_only_fields = ("id", )
+        read_only_fields = ("id",)
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
@@ -71,13 +71,22 @@ class PaymentListSerializer(serializers.ModelSerializer):
     course = CourseMiniSerializer(read_only=True)
     lesson = LessonMiniSerializer(read_only=True)
     method_display = serializers.CharField(source="get_method_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
         model = Payment
         fields = [
-            "id", "paid_at", "amount",
-            "method", "method_display",
-            "user", "course", "lesson",
+            "id",
+            "paid_at",
+            "amount",
+            "method",
+            "method_display",
+            "status",
+            "status_display",
+            "session_id",
+            "user",
+            "course",
+            "lesson",
         ]
 
 
@@ -85,5 +94,5 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['email'] = user.email
+        token["email"] = user.email
         return token

@@ -9,14 +9,20 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('lms', '0003_subscription'),
+        ("lms", "0003_subscription"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lesson',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='lessons', to=settings.AUTH_USER_MODEL, verbose_name='Создатель'),
+            model_name="lesson",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="lessons",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Создатель",
+            ),
             preserve_default=False,
         ),
     ]

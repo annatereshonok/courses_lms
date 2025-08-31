@@ -11,7 +11,7 @@ from .serializers import (
     PaymentListSerializer,
     EmailTokenObtainPairSerializer,
     RegisterSerializer,
-    UserSerializer
+    UserSerializer,
 )
 from .permissions import IsSelfUserOrAdmin
 
@@ -27,7 +27,7 @@ class PaymentListAPIView(generics.ListAPIView):
     filterset_fields = {
         "method": ["exact"],
         "course__name": ["icontains"],
-        "lesson__name": ["icontains"]
+        "lesson__name": ["icontains"],
     }
     ordering_fields = ["paid_at"]
     ordering = ["-paid_at"]
