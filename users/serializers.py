@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from users.models import Payment
-from lms.models import Course, Lesson
+from lms.models import Course, Lesson, Subscription
 
 User = get_user_model()
 

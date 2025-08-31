@@ -1,0 +1,11 @@
+[run]
+source = lms
+branch = True
+omit =
+    */migrations/*
+    */tests/*
+    manage.py
+
+[report]
+show_missing = True
+skip_covered = True
