@@ -27,10 +27,18 @@ class LessonAndSubscriptionTests(APITestCase):
 
         # уроки
         cls.my_lesson = Lesson.objects.create(
-            name="Мой урок", description="", video_url="https://youtu.be/abc123", course=cls.my_course
+            name="Мой урок",
+            description="",
+            video_url="https://youtu.be/abc123",
+            course=cls.my_course,
+            owner=cls.owner,
         )
         cls.others_lesson = Lesson.objects.create(
-            name="Чужой урок", description="", video_url="https://youtu.be/zzz999", course=cls.other_course
+            name="Чужой урок",
+            description="",
+            video_url="https://youtu.be/zzz999",
+            course=cls.other_course,
+            owner=cls.other,
         )
 
     def lessons_list_url(self):

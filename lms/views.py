@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 
-
 from .models import Course, Lesson, Subscription
 from .serializers import CourseListSerializer, CourseDetailSerializer, LessonSerializer, SubscriptionSerializer
 from .permissions import ModeratorPermission, OwnerPermission, is_moderator

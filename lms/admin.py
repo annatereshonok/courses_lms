@@ -16,6 +16,6 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "course", "video_url")
+    list_display = ("id", "name", "owner", "course", "video_url")
     list_filter = ("course",)
     search_fields = ("name", "course__name")
