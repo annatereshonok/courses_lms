@@ -42,6 +42,13 @@ class Lesson(models.Model):
         verbose_name="Курс",
         db_index=True,
     )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="lessons",
+        on_delete=models.CASCADE,
+        verbose_name="Создатель",
+        db_index=True,
+    )
 
     def __str__(self):
         return f"{self.name} — {self.course.name}"

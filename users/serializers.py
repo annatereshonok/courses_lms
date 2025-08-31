@@ -23,14 +23,35 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ("id", "email", "avatar", "phone", "password", "password2")
         read_only_fields = ("id", )
 
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        validated_data.pop("password2", None)
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
     def validate(self, attrs):
         if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError({"password": "Пароли не совпадают"})
         return attrs
 
-    def create(self, validated_data):
-        validated_data.pop("password2")
-        return User.objects.create_user(**validated_data)
+
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ("id", "email", "avatar", "phone", "password")
+        read_only_fields = ("id", )
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save(update_fields=["password"])
+        return user
 
 
 class CourseMiniSerializer(serializers.ModelSerializer):
