@@ -20,6 +20,9 @@ class Course(models.Model):
         decimal_places=2,
         verbose_name="Цена",
     )
+    updated_at = models.DateTimeField(
+        auto_now=True, verbose_name="Дата последнего изменения"
+    )
 
     def __str__(self):
         return self.name

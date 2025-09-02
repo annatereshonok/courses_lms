@@ -21,7 +21,7 @@ class PaymentAdmin(admin.ModelAdmin):
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ("id", "email", "phone", "city", "group_list")
+    list_display = ("id", "email", "phone", "city", "group_list", "is_active", "last_login")
 
     @admin.display(description="Groups")
     def group_list(self, obj):

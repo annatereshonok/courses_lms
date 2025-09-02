@@ -5,8 +5,9 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-import stripe
-import os
+from django.db import transaction
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import Course, Lesson, Subscription
 from users.models import Payment
@@ -19,6 +20,7 @@ from .serializers import (
 from .permissions import ModeratorPermission, OwnerPermission, is_moderator
 from .pagination import LMSPagination
 from .services.stripe_service import create_checkout_session
+from .tasks import notify_course_updated
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -56,6 +58,20 @@ class CourseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         serializer.save(owner=user)
+
+    def perform_update(self, serializer):
+        old_updated_at = getattr(serializer.instance, "updated_at", None)
+        now = timezone.now()
+        ok_by_time = (not old_updated_at) or (now - old_updated_at > timedelta(hours=4))
+        course = serializer.save()
+
+        if ok_by_time:
+            cid = course.pk
+            uid = self.request.user.pk
+            transaction.on_commit(
+                lambda course_id=cid, updated_by_id=uid:
+                notify_course_updated.delay(course_id=cid,
+                                            updated_by_id=uid))
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def subscribe(self, request, pk=None):
@@ -172,14 +188,29 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         u = self.request.user
+
         new_course = serializer.validated_data.get("course")
-        if (
-            new_course
-            and not (u.is_staff or is_moderator(u))
-            and new_course.owner_id != u.id
-        ):
+        if new_course and not (u.is_staff or is_moderator(u)) and new_course.owner_id != u.id:
             raise PermissionDenied("Нельзя привязать урок к чужому курсу.")
-        serializer.save()
+
+        old_course = serializer.instance.course
+        old_updated_at = getattr(old_course, "updated_at", None)
+
+        lesson = serializer.save()
+        course = lesson.course
+
+        now = timezone.now()
+        ok_by_time = (not old_updated_at) or (now - old_updated_at > timedelta(hours=4))
+
+        if ok_by_time:
+            cid = course.pk
+            uid = u.pk
+            transaction.on_commit(
+                lambda course_id=cid, updated_by_id=uid: notify_course_updated.delay(
+                    course_id=cid,
+                    updated_by_id=uid
+                )
+            )
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
