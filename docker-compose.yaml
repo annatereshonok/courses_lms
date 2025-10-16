@@ -1,0 +1,94 @@
+services:
+  db:
+    image: postgres:16
+    container_name: lms_db
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: lms_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lms_web
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-config.settings}
+      SEED_DEMO: ${SEED_DEMO:-0}
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery-worker:
+    build:
+      context: .
+    container_name: lms_celery_worker
+    restart: unless-stopped
+    command: celery -A ${CELERY_APP:-config} worker -l ${CELERY_LOGLEVEL:-INFO}
+    env_file: [.env]
+    volumes:
+      - ./:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+  celery-beat:
+    build:
+      context: .
+    container_name: lms_celery_beat
+    restart: unless-stopped
+    command: celery -A ${CELERY_APP:-config} beat -l ${CELERY_LOGLEVEL:-INFO} --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file: [.env]
+    volumes:
+      - ./:/app
+      - celery_beat:/app/celerybeat
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
+  celery_beat:

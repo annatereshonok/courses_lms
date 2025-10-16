@@ -1,0 +1,122 @@
+[
+{
+  "model": "lms.lesson",
+  "pk": 1,
+  "fields": {
+    "name": "Введение в Django",
+    "description": "Структура проекта, приложения, настройки, модели и миграции.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "course": 1,
+    "owner": 2
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 2,
+  "fields": {
+    "name": "Django REST Framework",
+    "description": "Сериализаторы, ViewSets, роутеры, аутентификация, permissions.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=4D3N2Wb2G9U",
+    "course": 1,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 3,
+  "fields": {
+    "name": "Тестирование и деплой",
+    "description": "pytest, coverage, CI, контейнеризация и деплой на сервер.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=9bZkp7q19f0",
+    "course": 1,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 4,
+  "fields": {
+    "name": "HTML/CSS базово",
+    "description": "Семантика HTML, современный CSS, адаптивность и сетки.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=UB1O30fR-EE",
+    "course": 2,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 5,
+  "fields": {
+    "name": "JavaScript основы",
+    "description": "Типы, функции, замыкания, DOM, события, fetch.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk",
+    "course": 2,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 6,
+  "fields": {
+    "name": "React и SPA",
+    "description": "Компоненты, состояние, роутинг, хуки, сборка проекта.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=Ke90Tje7VS0",
+    "course": 2,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 7,
+  "fields": {
+    "name": "Python для анализа данных",
+    "description": "NumPy, Pandas, загрузка/очистка данных, базовые операции.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=vmEHCJofslg",
+    "course": 3,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 8,
+  "fields": {
+    "name": "Визуализация",
+    "description": "Matplotlib, Plotly: линейные графики, гистограммы, боксплоты.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=3Xc3CA655Y4",
+    "course": 3,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 9,
+  "fields": {
+    "name": "Введение в ML",
+    "description": "Train/test split, метрики, линейные модели, деревья решений.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=GJo-4FfR2VU",
+    "course": 3,
+    "owner": 1
+  }
+},
+{
+  "model": "lms.lesson",
+  "pk": 10,
+  "fields": {
+    "name": "Введение в что-то там",
+    "description": "Структура проекта, приложения, настройки, модели и миграции.",
+    "preview": "",
+    "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "course": 1,
+    "owner": 1
+  }
+}
+]
