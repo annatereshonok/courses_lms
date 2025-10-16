@@ -83,7 +83,7 @@ class PaymentListSerializer(serializers.ModelSerializer):
             "method_display",
             "status",
             "status_display",
-            "session_id",
+            "stripe_session_id",
             "user",
             "course",
             "lesson",
