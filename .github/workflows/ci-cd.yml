@@ -94,14 +94,16 @@ jobs:
             "printf '%s\n' \"${{ secrets.ENV_PROD }}\" > /srv/lms/.env && chmod 600 /srv/lms/.env"
 
       - name: Deploy on server
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          ssh -p "${{ secrets.SSH_PORT }}" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            set -e
-            cd /srv/lms
-            docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml up -d
-            docker compose -f docker-compose.yml ps
-          EOF
+          env:
+            DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+            IMAGE_TAG: ${{ github.sha }}
+          run: |
+            ssh -p "${{ secrets.SSH_PORT }}" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+              set -e
+              cd /srv/lms
+              export DOCKERHUB_USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
+              export IMAGE_TAG="${{ env.IMAGE_TAG }}"
+              docker compose -f docker-compose.yml pull
+              docker compose -f docker-compose.yml up -d
+              docker compose -f docker-compose.yml ps
+            EOF
