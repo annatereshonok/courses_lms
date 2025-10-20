@@ -1,0 +1,32 @@
+[
+{
+  "model": "lms.course",
+  "pk": 1,
+  "fields": {
+    "name": "Backend",
+    "preview": "images/backend.png",
+    "description": "Основы серверной разработки: Django, DRF, БД, тесты, деплой.",
+    "owner": 4
+  }
+},
+{
+  "model": "lms.course",
+  "pk": 2,
+  "fields": {
+    "name": "Frontend",
+    "preview": "images/frontend.png",
+    "description": "Современный фронтенд: HTML/CSS, JS/TS, React, сборка, SPA.",
+    "owner": 2
+  }
+},
+{
+  "model": "lms.course",
+  "pk": 3,
+  "fields": {
+    "name": "Data Science",
+    "preview": "images/ds.png",
+    "description": "Аналитика и ML: Python, NumPy/Pandas, визуализация, модели.",
+    "owner": 1
+  }
+}
+]
