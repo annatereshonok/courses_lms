@@ -60,6 +60,24 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Debug workspace tree
+        run: |
+          echo "===== WORKSPACE INFO ====="
+          echo "Current path: $(pwd)"
+          echo "Repo root contents:"
+          ls -la
+          echo
+          echo "Looking for docker-compose files:"
+          find . -maxdepth 3 -name "docker-compose.y*"
+          echo
+          echo "Looking for nginx.conf:"
+          find . -maxdepth 4 -name "nginx.conf" -o -path "*/nginx/*.conf"
+          echo
+          echo "Git branch / commit info:"
+          git rev-parse --abbrev-ref HEAD || true
+          git rev-parse --short HEAD || true
+          echo "==========================="
+
       - name: Upload compose + nginx config
         run: |
           ssh -p "${{ secrets.SSH_PORT }}" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p /srv/lms/compose/nginx"
