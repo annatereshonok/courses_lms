@@ -1,3 +1,6 @@
+# lms/test_lms.py
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
@@ -27,12 +30,18 @@ class LessonAndSubscriptionTests(APITestCase):
         group, _ = Group.objects.get_or_create(name="moderators")
         cls.moder.groups.add(group)
 
-        # курсы
+        # курсы (добавили amount!)
         cls.my_course = Course.objects.create(
-            name="Мой курс", description="", owner=cls.owner
+            name="Мой курс",
+            description="",
+            owner=cls.owner,
+            amount=Decimal("1990.00"),
         )
         cls.other_course = Course.objects.create(
-            name="Чужой курс", description="", owner=cls.other
+            name="Чужой курс",
+            description="",
+            owner=cls.other,
+            amount=Decimal("990.00"),
         )
 
         # уроки
@@ -128,7 +137,6 @@ class LessonAndSubscriptionTests(APITestCase):
 
     def test_moderator_cannot_create_or_delete_lesson(self):
         self.client.force_authenticate(self.moder)
-        # создать
         payload = {
             "name": "Модераторский урок",
             "description": "",
