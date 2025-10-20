@@ -60,5 +60,5 @@ services:
       - ./compose/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
 volumes:
-  pgdata:
-  static:
+  lms_pgdata:
+  lms_static:
